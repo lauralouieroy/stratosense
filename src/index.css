@@ -1,0 +1,244 @@
+@import "tailwindcss";
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  animation: fadeUp 0.6s ease-out;
+}
+/* FLOAT */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* CLOUD MOVEMENT */
+@keyframes cloudMove {
+  0% { transform: translateX(0px); }
+  50% { transform: translateX(10px); }
+  100% { transform: translateX(0px); }
+}
+
+@keyframes cloudMoveSlow {
+  0% { transform: translateX(0px); }
+  50% { transform: translateX(-8px); }
+  100% { transform: translateX(0px); }
+}
+
+.animate-cloud {
+  animation: cloudMove 6s ease-in-out infinite;
+}
+
+.animate-cloudSlow {
+  animation: cloudMoveSlow 10s ease-in-out infinite;
+}
+
+/* RAIN */
+.rain span {
+  display: block;
+  width: 2px;
+  height: 12px;
+  background: #3b82f6;
+  margin: 3px;
+  animation: rainDrop 1s linear infinite;
+}
+
+.rain {
+  position: absolute;
+  top: 40px;
+  left: 35px;
+  display: flex;
+  gap: 4px;
+}
+
+@keyframes rainDrop {
+  0% { transform: translateY(0); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(12px); opacity: 0; }
+}
+/* SKY GRADIENT ANIMATION */
+@keyframes skyShift {
+  0% { transform: scale(1.1) translateY(0px); }
+  50% { transform: scale(1.15) translateY(-20px); }
+  100% { transform: scale(1.1) translateY(0px); }
+}
+
+.animate-sky {
+  animation: skyShift 12s ease-in-out infinite;
+}
+
+
+/* ================= WEATHER PRELOADER ================= */
+
+.preloader-weather {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  color: white;
+  background: linear-gradient(135deg, #60a5fa, #93c5fd);
+}
+
+/* SKY */
+/* .sky-bg {
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(
+    135deg,
+    #3b82f6,
+    #38bdf8,
+    #fde047
+  );
+  animation: skyShift 14s ease-in-out infinite;
+} */
+
+/* OVERLAY */
+.sky-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+}
+
+/* CONTENT */
+.preloader-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+}
+
+/* LOGO */
+.logo-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-glow {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  filter: blur(25px);
+
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+.logo-box {
+  width: 90px;
+  height: 90px;
+  border-radius: 22px;
+
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.3);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  animation: float 3s ease-in-out infinite;
+}
+
+.logo-box img {
+  width: 60px;
+  height: 60px;
+}
+
+/* TEXT */
+.app-name {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.app-sub {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* PROGRESS */
+.progress-container {
+  margin-top: 25px;
+}
+
+.progress-bar {
+  width: 240px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.3);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: white;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* ANIMATIONS */
+@keyframes skyShift {
+  0% { transform: scale(1.1) translateY(0); }
+  50% { transform: scale(1.15) translateY(-20px); }
+  100% { transform: scale(1.1) translateY(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes glowPulse {
+  0%,100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* SUNNY */
+.preloader-weather.clear {
+  background: linear-gradient(135deg, #3b82f6, #38bdf8, #fde047);
+}
+
+/* CLOUDY */
+.preloader-weather.clouds {
+  background: linear-gradient(135deg, #60a5fa, #93c5fd, #e0f2fe);
+}
+
+/* RAIN */
+.preloader-weather.rain {
+  background: linear-gradient(135deg, #334155, #475569, #1e293b);
+}
+
+/* STORM */
+.preloader-weather.thunderstorm {
+  background: linear-gradient(135deg, #111827, #1f2937, #000000);
+}
+
+/* MIST */
+.preloader-weather.mist {
+  background: linear-gradient(135deg, #9ca3af, #d1d5db, #f3f4f6);
+}
