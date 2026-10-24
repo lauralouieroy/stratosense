@@ -1,13 +1,14 @@
 import WeatherIcon from "./WeatherIcon";
+import Neighborhood from "./Neighborhood";
 
 function getInsight(temp, feelsLike, humidity, wind) {
-  if (feelsLike > temp + 1) return "Feels warmer than actual temperature";
-  if (humidity > 75) return "Humidity is high today";
-  if (wind > 20) return "Wind is quite strong";
-  return "Weather conditions are moderate";
+  if (feelsLike > temp + 1) return "The air feels warmer than the thermometer";
+  if (humidity > 75) return "The air is heavy with moisture";
+  if (wind > 20) return "The wind has a real push to it";
+  return "Conditions are steady right now";
 }
 
-function HeroWeather({ weather, theme }) {
+function HeroWeather({ weather }) {
   const insight = getInsight(
     weather.temp,
     weather.feelsLike,
@@ -16,68 +17,31 @@ function HeroWeather({ weather, theme }) {
   );
 
   return (
-    <section className="relative px-4 md:px-6 py-16 md:py-24 text-center text-white overflow-hidden">
-
-      {/* 🌈 Dynamic Sky (bigger for movement) */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          className={`absolute inset-[-25%] bg-gradient-to-br ${theme.gradient} animate-sky`}
-        />
-      </div>
-
-      {/* 🌫 Atmospheric overlay */}
-      <div className={`absolute inset-0 ${theme.overlay} backdrop-blur-2xl`} />
-
-      {/* 🌧 Rain Effect */}
-      {weather.main === "Rain" && (
-        <div className="absolute inset-0 rain opacity-40"></div>
-      )}
-
-      {/* ☀️ Center Glow (MAIN IMPROVEMENT) */}
-      <div className="absolute inset-0 flex justify-center items-center">
-        <div className="w-40 h-40 md:w-56 md:h-56 bg-white/20 rounded-full blur-3xl opacity-70"></div>
-      </div>
-
-      {/* ✨ Light blobs (subtle depth) */}
-      <div className="absolute inset-0">
-        <div className="absolute w-60 h-60 md:w-80 md:h-80 bg-white/10 rounded-full blur-3xl top-[-60px] left-[-60px]" />
-        <div className="absolute w-60 h-60 md:w-80 md:h-80 bg-white/10 rounded-full blur-3xl bottom-[-60px] right-[-60px]" />
-      </div>
-
-      {/* 📊 Content */}
-      <div className="relative z-10 flex flex-col items-center">
-
-        {/* Location */}
-        <p className="text-xs md:text-sm opacity-90 mb-2">
-          {weather.location}
-        </p>
-
-        {/* Animated Icon */}
-        <div className="mb-2">
-          <WeatherIcon type={weather.main} />
-        </div>
-
-        {/* Temperature (MAIN FOCUS) */}
-        <h2 className="text-7xl md:text-9xl font-bold tracking-tight drop-shadow-xl leading-none">
-          {weather.temp}°
+    <section className="hero">
+      <div className="hero-copy">
+        <p className="hero-place">{weather.location}</p>
+        <WeatherIcon type={weather.main} />
+        <h2 className="hero-temp">
+          {weather.temp}
+          <span className="hero-deg">°</span>
         </h2>
-
-        {/* Condition */}
-        <p className="text-base md:text-xl mt-2 capitalize opacity-90 drop-shadow">
-          {weather.condition}
-        </p>
-
-        {/* Feels Like */}
-        <p className="text-sm opacity-80 mt-1">
-          Feels like {weather.feelsLike}°
-        </p>
-
-        {/* Insight */}
-        <p className="text-xs opacity-80 mt-3 max-w-xs">
-          {insight}
-        </p>
-
+        <p className="hero-condition">{weather.condition}</p>
+        <p className="hero-feels">Feels like {weather.feelsLike}°</p>
+        <p className="hero-insight">{insight}</p>
+        <div className="hero-scroll" aria-hidden="true">
+          <span>Scroll</span>
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
       </div>
+      <Neighborhood
+        className="weather-people"
+        condition={weather.main}
+        isNight={weather.isNight}
+        wind={weather.wind}
+        temp={weather.temp}
+      />
     </section>
   );
 }

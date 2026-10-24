@@ -1,30 +1,39 @@
-export function getWeatherTheme(condition) {
-  const map = {
-Clear: {
-  gradient: "from-blue-500 via-sky-400 to-yellow-300",
-  overlay: "bg-white/10",
-},
-Clouds: {
-  gradient: "from-blue-300 via-sky-200 to-blue-400",
-  overlay: "bg-white/10",
-},
-Rain: {
-  gradient: "from-slate-700 via-slate-600 to-slate-800",
-  overlay: "bg-black/20",
-},
-    Thunderstorm: {
-      gradient: "from-gray-800 via-slate-700 to-black",
-      overlay: "bg-purple-900/30",
-    },
-    Drizzle: {
-      gradient: "from-blue-300 via-slate-300 to-gray-400",
-      overlay: "bg-blue-400/20",
-    },
-    Mist: {
-      gradient: "from-gray-400 via-gray-300 to-gray-200",
-      overlay: "bg-white/30",
-    },
-  };
+const WEATHER_KEYS = {
+  Clear: "clear",
+  Clouds: "clouds",
+  Rain: "rain",
+  Drizzle: "drizzle",
+  Thunderstorm: "storm",
+  Snow: "snow",
+  Mist: "fog",
+  Smoke: "fog",
+  Haze: "fog",
+  Dust: "fog",
+  Fog: "fog",
+  Sand: "fog",
+  Ash: "fog",
+  Squall: "storm",
+  Tornado: "storm",
+};
 
-  return map[condition] || map["Clear"];
+export function getWeatherKey(condition) {
+  return WEATHER_KEYS[condition] || "clear";
+}
+
+export function getWeatherTheme(condition) {
+  return { key: getWeatherKey(condition) };
+}
+
+export function rainIntensity(description = "") {
+  const text = description.toLowerCase();
+  if (
+    text.includes("heavy") ||
+    text.includes("extreme") ||
+    text.includes("violent") ||
+    text.includes("ragged")
+  ) {
+    return 1.3;
+  }
+  if (text.includes("light")) return 0.9;
+  return 1;
 }
