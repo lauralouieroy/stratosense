@@ -1,51 +1,38 @@
 import { getWeatherKey } from "../utils/weatherTheme";
 
-const SKINS = ["#f4c7a2", "#b7774d"];
-const HAIR = ["#3f2a1d", "#1c1917"];
+const SKINS = ["#f4c7a2", "#b7774d", "#e0ac84"];
+const HAIR = ["#3f2a1d", "#1c1917", "#7c2d12"];
 
-const RAIN = [
-  { hat: "cap", umbrella: true, coat: "#2563eb", accent: "#facc15", pants: "#1e293b", boots: "#0f172a" },
-  { hat: "hood", umbrella: true, coat: "#0284c7", accent: "#e0f2fe", pants: "#334155", boots: "#1e3a8a" },
+const ROLES = [
+  { hairStyle: "long", woman: true },
+  { hairStyle: "short", woman: false },
+  { hairStyle: "ponytail", woman: true },
 ];
 
-const STORM = [
-  { hat: "hood", umbrella: true, gust: true, coat: "#1e3a8a", accent: "#f8fafc", pants: "#0f172a", boots: "#020617" },
-  { hat: "cap", umbrella: true, gust: true, coat: "#334155", accent: "#fde047", pants: "#1e293b", boots: "#0f172a" },
-];
+function lookFor(role, index, kind, isNight, temp) {
+  const wet = kind === "rain" || kind === "drizzle" || kind === "storm";
+  const snowy = kind === "snow" || temp <= 3;
+  const hot = temp >= 24 && !snowy;
+  const mild = temp >= 16 && !snowy;
+  const shirt = ["#fb7185", "#22c55e", "#f97316"][index];
+  const jacket = ["#2563eb", "#475569", "#7c3aed"][index];
 
-const SNOW = [
-  { hat: "beanie", scarf: true, coat: "#e11d48", accent: "#fecdd3", pants: "#1e293b", boots: "#44403c" },
-  { hat: "hood", scarf: true, coat: "#7c3aed", accent: "#ddd6fe", pants: "#312e81", boots: "#1e1b4b" },
-];
-
-const SUN = [
-  { hat: "sun", shades: true, sleeves: "short", coat: "#f97316", accent: "#fde047", pants: "#2563eb", boots: "#f8fafc" },
-  { hat: "cap", shades: true, sleeves: "short", coat: "#22c55e", accent: "#facc15", pants: "#0f172a", boots: "#f8fafc" },
-];
-
-const CLOUD = [
-  { hat: "cap", coat: "#475569", accent: "#e2e8f0", pants: "#1e293b", boots: "#0f172a" },
-  { hat: "none", coat: "#0284c7", accent: "#bae6fd", pants: "#334155", boots: "#1e293b" },
-];
-
-const FOG = [
-  { hat: "hood", scarf: true, coat: "#475569", accent: "#e2e8f0", pants: "#1e293b", boots: "#0f172a" },
-  { hat: "beanie", scarf: true, coat: "#64748b", accent: "#cbd5e1", pants: "#334155", boots: "#1e293b" },
-];
-
-const NIGHT = [
-  { hat: "beanie", coat: "#1e293b", accent: "#38bdf8", pants: "#020617", boots: "#020617" },
-  { hat: "hood", coat: "#312e81", accent: "#c4b5fd", pants: "#1e1b4b", boots: "#020617" },
-];
-
-function outfitsFor(kind, isNight, temp) {
-  if (kind === "storm") return STORM;
-  if (kind === "rain" || kind === "drizzle") return RAIN;
-  if (kind === "snow" || temp <= 2) return SNOW;
-  if (kind === "fog") return FOG;
-  if (isNight) return NIGHT;
-  if (kind === "clear" && temp >= 22) return SUN;
-  return CLOUD;
+  return {
+    hairStyle: role.hairStyle,
+    woman: role.woman,
+    bottom: role.woman && hot ? "skirt" : "pants",
+    light: hot || (mild && !wet),
+    sleeves: hot || (mild && !wet) ? "short" : "long",
+    hat: snowy ? "beanie" : hot && !wet && !isNight ? (role.woman ? "sun" : "cap") : wet && !hot ? "hood" : wet ? "cap" : "none",
+    umbrella: wet,
+    gust: kind === "storm",
+    scarf: snowy || (kind === "fog" && !hot),
+    shades: hot && !wet && !isNight,
+    coat: hot ? shirt : mild && !wet ? shirt : jacket,
+    accent: ["#facc15", "#e0f2fe", "#fb7185"][index],
+    pants: ["#1e293b", "#334155", "#312e81"][index],
+    boots: hot ? "#f8fafc" : "#0f172a",
+  };
 }
 
 function Legs({ look, skin, side }) {
@@ -94,18 +81,11 @@ function Legs({ look, skin, side }) {
 
 export function getCrowd(condition, isNight, temp = 20, wind = 0) {
   const kind = getWeatherKey(condition);
-  const pair = outfitsFor(kind, isNight, temp);
-  const third = {
-    ...pair[1],
-    hat: pair[0].hat,
-    sleeves: pair[0].sleeves,
-    shades: pair[0].shades,
-  };
 
   return {
     kind,
     lean: kind === "storm" ? 8 : Math.min(wind, 36) / 10,
-    looks: [pair[0], pair[1], third],
+    looks: ROLES.map((role, index) => lookFor(role, index, kind, isNight, temp)),
   };
 }
 
@@ -132,8 +112,19 @@ export function Person({ look, skin, hair, mirror, delay, lean }) {
             </g>
           )}
 
-          <Legs look={look} skin={skin} side="a" />
-          <Legs look={look} skin={skin} side="b" />
+          {look.bottom === "skirt" ? (
+            <>
+              <path d="M66 132 L60 158" stroke={skin} strokeWidth="10" strokeLinecap="round" />
+              <path d="M94 132 L100 158" stroke={skin} strokeWidth="10" strokeLinecap="round" />
+              <path d="M50 156h18l1 8H48z" fill={look.boots} />
+              <path d="M90 156h18l3 8H88z" fill={look.boots} />
+            </>
+          ) : (
+            <>
+              <Legs look={look} skin={skin} side="a" />
+              <Legs look={look} skin={skin} side="b" />
+            </>
+          )}
 
           <path
             d="M62 90c-16 8-16 28-6 38"
@@ -143,8 +134,15 @@ export function Person({ look, skin, hair, mirror, delay, lean }) {
             strokeLinecap="round"
           />
 
-          <path d="M56 82c10-14 40-14 50 0l8 40c-18 14-48 14-66 0z" fill={look.coat} />
-          <path d="M80 90v22" stroke="rgba(255,255,255,0.28)" strokeWidth="2" strokeLinecap="round" />
+          <path
+            d={look.light
+              ? "M60 84c8-10 32-10 40 0l4 26c-14 8-34 8-48 0z"
+              : "M56 82c10-14 40-14 50 0l8 40c-18 14-48 14-66 0z"}
+            fill={look.coat}
+          />
+          {look.bottom === "skirt" && (
+            <path d="M50 108c10 26 58 26 68 0l4 6c-16 32-60 32-76 0z" fill={look.coat} />
+          )}
 
           <path
             d={look.umbrella ? "M98 90c14-8 24 2 24 18" : "M98 90c14 8 12 26 2 34"}
@@ -158,7 +156,21 @@ export function Person({ look, skin, hair, mirror, delay, lean }) {
             <path d="M50 72c0-40 60-40 60 0-8-18-52-18-60 0z" fill={look.coat} />
           )}
 
-          <path d="M56 64c2-22 46-24 50 2-10-12-40-12-50-2z" fill={hair} />
+          {look.hairStyle === "long" && (
+            <>
+              <path d="M58 72c-8 20-6 40 2 52" fill="none" stroke={hair} strokeWidth="8" strokeLinecap="round" />
+              <path d="M102 72c8 20 6 40-2 52" fill="none" stroke={hair} strokeWidth="8" strokeLinecap="round" />
+            </>
+          )}
+          {look.hairStyle === "ponytail" && (
+            <path d="M96 60c16 10 20 30 8 46" fill="none" stroke={hair} strokeWidth="7" strokeLinecap="round" />
+          )}
+          {look.hairStyle === "short" && (
+            <path d="M56 64c2-22 46-24 50 2-10-12-40-12-50-2z" fill={hair} />
+          )}
+          {(look.hairStyle === "long" || look.hairStyle === "ponytail") && (
+            <path d="M58 66c4-20 42-22 46 0-8-8-36-8-46 0z" fill={hair} />
+          )}
           <circle cx="80" cy="64" r="17" fill={skin} />
 
           {look.shades ? (
